@@ -1,23 +1,47 @@
 package chess.engine.board;
 
+import chess.engine.pieces.Piece;
+import com.google.common.collect.ImmutableMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 //The tiles make up the entire 8x8 chess board
 public abstract class Tile
 {
-    int position; //Tile position
+    protected final int position; //Tile position
 
-    Tile(int position)
+    private static final Map<Integer, Empty> EMPTY_TILES = createEmptyTiles();
+
+    private static Map<Integer, Empty> createEmptyTiles()
+    {
+        final Map<Integer, Empty> emptyMap = new HashMap<>();
+
+        for (int i = 0; i < 64; i++) //Chess board initially consists of 64 empty tiles
+        {
+            emptyMap.put(i, new Empty(i));
+        }
+
+        return ImmutableMap.copyOf(emptyMap);
+    }
+
+    public static Tile create(final int position, final Piece piece) //Creates a new Full tile when a piece moves to its position
+    {
+        return piece != null ? new Full(position, piece) : EMPTY_TILES.get(position);
+    }
+
+    Tile(final int position)
     {
         this.position = position;
     }
 
     public abstract boolean isFull(); //Checks if a specific tile has a piece on it
 
-    public abstract Piece getPiece();
+    public abstract Piece getPiece(); //Returns the piece currently on the tile, if any
 
     public static final class Empty extends Tile //Empty tiles (tiles without a piece on them)
     {
-        Empty(int position)
+        private Empty(int position)
         {
             super(position);
         }
@@ -37,9 +61,9 @@ public abstract class Tile
 
     public static final class Full extends Tile //Full tiles (tiles with a piece on them)
     {
-        Piece tilePiece;
+        private final Piece tilePiece;
 
-        Full(int position, Piece tilePiece)
+        private Full(int position, Piece tilePiece)
         {
             super(position);
             this.tilePiece = tilePiece;
