@@ -31,7 +31,7 @@ public class Rook extends Piece
         {
             int possibleCoordinate = this.position;
 
-            while (isValidCoordinate(possibleCoordinate))
+            while (isValidCoordinate(possibleCoordinate)) //Checks each horizontal and vertical move until an invalid move
             {
                 if (isFirstColumn(possibleCoordinate, currentOffset) || isEighthColumn(possibleCoordinate, currentOffset))
                 {
@@ -64,6 +64,7 @@ public class Rook extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    //Rook move exceptions
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
         return LEFT_COLUMN[currentPosition] && (possibleMove == -1);

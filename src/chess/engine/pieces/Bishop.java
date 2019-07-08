@@ -32,7 +32,7 @@ public class Bishop extends Piece
         {
             int possibleCoordinate = this.position;
 
-            while (isValidCoordinate(possibleCoordinate))
+            while (isValidCoordinate(possibleCoordinate)) //Checks each diagonal move until an invalid move
             {
                 if (isFirstColumn(possibleCoordinate, currentOffset) || isEighthColumn(possibleCoordinate, currentOffset))
                 {
@@ -65,6 +65,7 @@ public class Bishop extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    //Move exceptions for the bishop
     private static boolean isFirstColumn(final int position, final int possible)
     {
         return LEFT_COLUMN[position] && ((possible == -9) || (possible == 7));
