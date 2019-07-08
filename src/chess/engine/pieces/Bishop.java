@@ -1,5 +1,78 @@
 package chess.engine.pieces;
 
-public class Bishop
+import chess.engine.Color;
+import chess.engine.board.Board;
+import chess.engine.board.Moves;
+import chess.engine.board.BoardUtils.*;
+import chess.engine.board.Tile;
+import com.google.common.collect.ImmutableList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static chess.engine.board.BoardUtils.*;
+import static chess.engine.board.Moves.*;
+
+
+public class Bishop extends Piece
 {
+    private final static int[] BISHOP_MOVES = {-9, -7, 7, 9};
+
+    Bishop(int position, Color color)
+    {
+        super(position, color);
+    }
+
+    @Override
+    public Collection<Moves> getLegalMoves(final Board board)
+    {
+        final List<Moves> legalMoves = new ArrayList<>();
+
+        for (final int current: BISHOP_MOVES)
+        {
+            int possibleCoordinate = this.position;
+
+            while (isValidCoordinate(possibleCoordinate))
+            {
+                if (isLeftColumn(possibleCoordinate, possibleCoordinate) || isRightColumn(possibleCoordinate, possibleCoordinate))
+                {
+                    break;
+                }
+
+                possibleCoordinate += current;
+                if (isValidCoordinate(possibleCoordinate))
+                {
+                    final Tile currentTile = board.getTile(possibleCoordinate); //Tile corresponding to the new posssible position of the knight
+
+                    if (!currentTile.isFull()) //If tile is empty, knight can move to it
+                    {
+                        legalMoves.add(new Moves.MajorMove(board, this, possibleCoordinate));
+                    } else //If tile is already occupied
+                    {
+                        final Piece currentTilePiece = currentTile.getPiece();
+                        final Color pieceColor = currentTilePiece.getPieceColor();
+
+                        if (this.color != pieceColor) //If occupied tile has a piece of the opposite color, knight can move to it and claim the piece on it
+                        {
+                            legalMoves.add(new AttackMove(board, this, possibleCoordinate, currentTilePiece));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return ImmutableList.copyOf(legalMoves);
+    }
+
+    private static boolean isLeftColumn(final int position, final int possible)
+    {
+        return LEFT_COLUMN[position] && ((possible == -9) || (possible == 7));
+    }
+
+    private static boolean isRightColumn(final int position, final int possible)
+    {
+        return RIGHT_COLUMN[position] && ((possible == -7) || (possible == 9));
+    }
 }
