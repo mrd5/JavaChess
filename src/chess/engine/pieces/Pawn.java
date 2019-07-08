@@ -4,6 +4,7 @@ import chess.engine.Color;
 import chess.engine.board.Board;
 import chess.engine.board.BoardUtils;
 import chess.engine.board.Moves;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,6 +80,6 @@ public class Pawn extends Piece
             }
         }
 
-        return legalMoves;
+        return ImmutableList.copyOf(legalMoves);
     }
 }
