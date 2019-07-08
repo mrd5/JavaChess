@@ -4,7 +4,7 @@ import chess.engine.Color;
 import chess.engine.board.Board;
 import chess.engine.board.Moves;
 
-import java.util.List;
+import java.util.Collection;
 
 public abstract class Piece
 {
@@ -22,5 +22,5 @@ public abstract class Piece
         return this.color;
     }
 
-    public abstract List<Moves> getLegalMoves(final Board board); //All of the possible moves a piece can make
+    public abstract Collection<Moves> getLegalMoves(final Board board); //All of the possible moves a piece can make
 }

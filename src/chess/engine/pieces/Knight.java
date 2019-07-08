@@ -35,7 +35,7 @@ public class Knight extends Piece
                     if (isFirstColumn(position, possibleCoordinate) ||
                             isSecondColumn(position, possibleCoordinate) ||
                             isSeventhColumn(position, possibleCoordinate) ||
-                            isRightColumn(position, possibleCoordinate))
+                            isEighthColumn(position, possibleCoordinate))
                     {
                         continue;
                     }
@@ -63,23 +63,23 @@ public class Knight extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
-    private static boolean isFirstColumn(final int current, final int possible)
+    private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
-        return LEFT_COLUMN[current] && ((possible == -17) || (possible == -10) || (possible == 6) || (possible == 15));
+        return LEFT_COLUMN[currentPosition] && ((possibleMove == -17) || (possibleMove == -10) || (possibleMove == 6) || (possibleMove == 15));
     }
 
-    private static boolean isSecondColumn(final int current, final int possible)
+    private static boolean isSecondColumn(final int currentPosition, final int possibleMove)
     {
-        return SECOND_COLUMN[current] && ((possible == -10) || (possible == 6));
+        return SECOND_COLUMN[currentPosition] && ((possibleMove == -10) || (possibleMove == 6));
     }
 
-    private static boolean isSeventhColumn(final int current, final int possible)
+    private static boolean isSeventhColumn(final int currentPosition, final int possibleMove)
     {
-        return SEVENTH_COLUMN[current] && ((possible == -6) || (possible == 10));
+        return SEVENTH_COLUMN[currentPosition] && ((possibleMove == -6) || (possibleMove == 10));
     }
 
-    private static boolean isRightColumn(final int current, final int possible)
+    private static boolean isEighthColumn(final int currentPosition, final int possibleMove)
     {
-        return RIGHT_COLUMN[current] && ((possible == -15) || (possible == -6) || (possible == 10) || (possible == 17));
+        return RIGHT_COLUMN[currentPosition] && ((possibleMove == -15) || (possibleMove == -6) || (possibleMove == 10) || (possibleMove == 17));
     }
 }

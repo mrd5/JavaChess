@@ -3,7 +3,6 @@ package chess.engine.pieces;
 import chess.engine.Color;
 import chess.engine.board.Board;
 import chess.engine.board.Moves;
-import chess.engine.board.BoardUtils.*;
 import chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
 
@@ -29,18 +28,18 @@ public class Bishop extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int current: BISHOP_MOVES)
+        for (final int currentOffset: BISHOP_MOVES)
         {
             int possibleCoordinate = this.position;
 
             while (isValidCoordinate(possibleCoordinate))
             {
-                if (isLeftColumn(possibleCoordinate, possibleCoordinate) || isRightColumn(possibleCoordinate, possibleCoordinate))
+                if (isFirstColumn(possibleCoordinate, currentOffset) || isEighthColumn(possibleCoordinate, currentOffset))
                 {
                     break;
                 }
 
-                possibleCoordinate += current;
+                possibleCoordinate += currentOffset;
                 if (isValidCoordinate(possibleCoordinate))
                 {
                     final Tile currentTile = board.getTile(possibleCoordinate); //Tile corresponding to the new posssible position of the knight
@@ -66,12 +65,12 @@ public class Bishop extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
-    private static boolean isLeftColumn(final int position, final int possible)
+    private static boolean isFirstColumn(final int position, final int possible)
     {
         return LEFT_COLUMN[position] && ((possible == -9) || (possible == 7));
     }
 
-    private static boolean isRightColumn(final int position, final int possible)
+    private static boolean isEighthColumn(final int position, final int possible)
     {
         return RIGHT_COLUMN[position] && ((possible == -7) || (possible == 9));
     }

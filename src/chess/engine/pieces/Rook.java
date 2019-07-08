@@ -27,18 +27,18 @@ public class Rook extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int current: ROOK_MOVES)
+        for (final int currentOffset: ROOK_MOVES)
         {
             int possibleCoordinate = this.position;
 
             while (isValidCoordinate(possibleCoordinate))
             {
-                if (isFirstColumn(possibleCoordinate, possibleCoordinate) || isRightColumn(possibleCoordinate, possibleCoordinate))
+                if (isFirstColumn(possibleCoordinate, currentOffset) || isEighthColumn(possibleCoordinate, currentOffset))
                 {
                     break;
                 }
 
-                possibleCoordinate += current;
+                possibleCoordinate += currentOffset;
                 if (isValidCoordinate(possibleCoordinate))
                 {
                     final Tile currentTile = board.getTile(possibleCoordinate); //Tile corresponding to the new posssible position of the knight
@@ -64,13 +64,13 @@ public class Rook extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
-    private static boolean isFirstColumn(final int current, final int possible)
+    private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
-        return LEFT_COLUMN[current] && (possible == -1);
+        return LEFT_COLUMN[currentPosition] && (possibleMove == -1);
     }
 
-    private static boolean isRightColumn(final int current, final int possible)
+    private static boolean isEighthColumn(final int currentPosition, final int possibleMove)
     {
-        return RIGHT_COLUMN[current] && (possible == 1);
+        return RIGHT_COLUMN[currentPosition] && (possibleMove == 1);
     }
 }
