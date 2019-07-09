@@ -17,7 +17,7 @@ import static chess.engine.board.Moves.*;
 public class Knight extends Piece
 {
     private final static int[] KNIGHT_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17}; //Represents all of the possible moves a knight can make
-    Knight(final int position, final Color color)
+    public Knight(final int position, final Color color)
     {
         super(position, color);
     }
@@ -63,9 +63,15 @@ public class Knight extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    @Override
+    public String toString()
+    {
+        return PieceType.KNIGHT.toString();
+    }
+
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove) //If a knight is on the first column, there are some exceptions to the moves it can make
     {
-        return LEFT_COLUMN[currentPosition] && ((possibleMove == -17) || (possibleMove == -10) || (possibleMove == 6) || (possibleMove == 15));
+        return FIRST_COLUMN[currentPosition] && ((possibleMove == -17) || (possibleMove == -10) || (possibleMove == 6) || (possibleMove == 15));
     }
 
     private static boolean isSecondColumn(final int currentPosition, final int possibleMove) //Second column exceptions
@@ -80,6 +86,6 @@ public class Knight extends Piece
 
     private static boolean isEighthColumn(final int currentPosition, final int possibleMove) //Eighth column exceptions
     {
-        return RIGHT_COLUMN[currentPosition] && ((possibleMove == -15) || (possibleMove == -6) || (possibleMove == 10) || (possibleMove == 17));
+        return EIGHTH_COLUMN[currentPosition] && ((possibleMove == -15) || (possibleMove == -6) || (possibleMove == 10) || (possibleMove == 17));
     }
 }

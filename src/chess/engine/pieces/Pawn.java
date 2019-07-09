@@ -18,7 +18,7 @@ public class Pawn extends Piece
 {
     private final static int[] PAWN_MOVES = {7, 8, 9, 16}; //16 = Jump two tiles, 9 = 1 tile, 7/8 = attacking moves
 
-    Pawn(final int position, final Color color)
+    public Pawn(final int position, final Color color)
     {
         super(position, color);
     }
@@ -81,5 +81,11 @@ public class Pawn extends Piece
         }
 
         return ImmutableList.copyOf(legalMoves);
+    }
+
+    @Override
+    public String toString()
+    {
+        return PieceType.PAWN.toString();
     }
 }

@@ -18,7 +18,7 @@ public class Bishop extends Piece
 {
     private final static int[] BISHOP_MOVES = {-9, -7, 7, 9};
 
-    Bishop(int position, Color color)
+    public Bishop(int position, Color color)
     {
         super(position, color);
     }
@@ -65,14 +65,20 @@ public class Bishop extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    @Override
+    public String toString()
+    {
+        return PieceType.BISHOP.toString();
+    }
+
     //Move exceptions for the bishop
     private static boolean isFirstColumn(final int position, final int possible)
     {
-        return LEFT_COLUMN[position] && ((possible == -9) || (possible == 7));
+        return FIRST_COLUMN[position] && ((possible == -9) || (possible == 7));
     }
 
     private static boolean isEighthColumn(final int position, final int possible)
     {
-        return RIGHT_COLUMN[position] && ((possible == -7) || (possible == 9));
+        return EIGHTH_COLUMN[position] && ((possible == -7) || (possible == 9));
     }
 }

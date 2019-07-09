@@ -17,7 +17,7 @@ public class Queen extends Piece
 {
     private final static int[] QUEEN_MOVES = {-9, -8, -7, -1, 1, 7, 8, 9}; //Same as Rook OR Bishop
 
-    Queen(int position, Color color)
+    public Queen(int position, Color color)
     {
         super(position, color);
     }
@@ -64,13 +64,19 @@ public class Queen extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    @Override
+    public String toString()
+    {
+        return PieceType.QUEEN.toString();
+    }
+
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
-        return LEFT_COLUMN[currentPosition] && ((possibleMove == -9) || (possibleMove == -1) || (possibleMove == 7));
+        return FIRST_COLUMN[currentPosition] && ((possibleMove == -9) || (possibleMove == -1) || (possibleMove == 7));
     }
 
     private static boolean isEighthColumn(final int currentPosition, final int possibleMove)
     {
-        return RIGHT_COLUMN[currentPosition] && ((possibleMove == -7) || (possibleMove == 1) || (possibleMove == 9));
+        return EIGHTH_COLUMN[currentPosition] && ((possibleMove == -7) || (possibleMove == 1) || (possibleMove == 9));
     }
 }

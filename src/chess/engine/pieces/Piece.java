@@ -19,6 +19,11 @@ public abstract class Piece
         this.isFirstMove = false; //TODO
     }
 
+    public int getPiecePosition()
+    {
+        return this.position;
+    }
+
     public Color getPieceColor() //Pieces are either white or black
     {
         return this.color;
@@ -30,4 +35,28 @@ public abstract class Piece
     }
 
     public abstract Collection<Moves> getLegalMoves(final Board board); //All of the possible moves a piece can make
+
+    public enum PieceType
+    {
+        PAWN("P"),
+        KNIGHT("N"),
+        BISHOP("B"),
+        QUEEN("Q"),
+        ROOK("R"),
+        KING("K");
+
+
+        private String pieceName;
+
+        PieceType(final String pieceName)
+        {
+            this.pieceName = pieceName;
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.pieceName;
+        }
+    }
 }

@@ -2,6 +2,7 @@ package chess.engine.pieces;
 
 import chess.engine.Color;
 import chess.engine.board.Board;
+import chess.engine.board.BoardUtils;
 import chess.engine.board.Moves;
 import chess.engine.board.Tile;
 import com.google.common.collect.ImmutableList;
@@ -17,7 +18,7 @@ public class Rook extends Piece
 {
     private final static int[] ROOK_MOVES = {-8, -1, 1, 8};
 
-    Rook(int position, Color color)
+    public Rook(int position, Color color)
     {
         super(position, color);
     }
@@ -64,14 +65,20 @@ public class Rook extends Piece
         return ImmutableList.copyOf(legalMoves);
     }
 
+    @Override
+    public String toString()
+    {
+        return PieceType.ROOK.toString();
+    }
+
     //Rook move exceptions
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
-        return LEFT_COLUMN[currentPosition] && (possibleMove == -1);
+        return FIRST_COLUMN[currentPosition] && (possibleMove == -1);
     }
 
     private static boolean isEighthColumn(final int currentPosition, final int possibleMove)
     {
-        return RIGHT_COLUMN[currentPosition] && (possibleMove == 1);
+        return EIGHTH_COLUMN[currentPosition] && (possibleMove == 1);
     }
 }
