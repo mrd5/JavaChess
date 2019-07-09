@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import static chess.engine.board.BoardUtils.NUM_TILES;
+
 //The tiles make up the entire 8x8 chess board
 public abstract class Tile
 {
@@ -17,7 +19,7 @@ public abstract class Tile
     {
         final Map<Integer, Empty> emptyMap = new HashMap<>();
 
-        for (int i = 0; i < 64; i++) //Chess board initially consists of 64 empty tiles
+        for (int i = 0; i < NUM_TILES; i++) //Chess board initially consists of 64 empty tiles
         {
             emptyMap.put(i, new Empty(i));
         }
@@ -30,7 +32,7 @@ public abstract class Tile
         return piece != null ? new Full(position, piece) : EMPTY_TILES.get(position);
     }
 
-    Tile(final int position)
+    private Tile(final int position)
     {
         this.position = position;
     }
@@ -44,6 +46,12 @@ public abstract class Tile
         private Empty(int position)
         {
             super(position);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "-";
         }
 
         @Override
@@ -70,6 +78,12 @@ public abstract class Tile
         }
 
         @Override
+        public String toString()
+        {
+            return getPiece().getPieceColor().isBlack() ? getPiece().toString().toLowerCase() : getPiece().toString(); //white piece = upper case, black piece = lower case
+        }
+
+        @Override
         public boolean isFull() //Full tile is full
         {
             return true;
@@ -78,7 +92,7 @@ public abstract class Tile
         @Override
         public Piece getPiece() //Returns piece on the current tile
         {
-            return tilePiece;
+            return this.tilePiece;
         }
     }
 }
