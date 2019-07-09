@@ -15,7 +15,7 @@ public abstract class Moves
         this.destination = destination;
     }
 
-    public static final class MajorMove extends Moves
+    public static final class MajorMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
     {
         public MajorMove(final Board board, final Piece movedPiece, final int destination)
         {
@@ -23,7 +23,7 @@ public abstract class Moves
         }
     }
 
-    public static final class AttackMove extends Moves
+    public static final class AttackMove extends Moves //An Attack move is one which claims the other players' piece
     {
         final Piece attackedPiece;
 
