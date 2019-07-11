@@ -1,5 +1,9 @@
 package chess.engine;
 
+import chess.engine.player.BlackPlayer;
+import chess.engine.player.Player;
+import chess.engine.player.WhitePlayer;
+
 public enum Color
 {
     WHITE
@@ -20,6 +24,12 @@ public enum Color
         public boolean isBlack()
         {
             return false;
+        }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer white, final BlackPlayer black)
+        {
+            return white;
         }
     },
 
@@ -42,9 +52,17 @@ public enum Color
         {
             return true;
         }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer white, final BlackPlayer black)
+        {
+            return black;
+        }
     };
 
     public abstract int getColor();
     public abstract boolean isWhite();
     public abstract boolean isBlack();
+
+    public abstract Player choosePlayer(WhitePlayer white, BlackPlayer black);
 }
