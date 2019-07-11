@@ -12,6 +12,7 @@ public abstract class Piece
     protected final int position;
     protected final Color color;
     protected final boolean isFirstMove;
+    private final int cachedHashCode
 
     Piece(final PieceType pieceType, int position, final Color color)
     {
@@ -19,6 +20,39 @@ public abstract class Piece
         this.position = position;
         this.color = color;
         this.isFirstMove = false; //TODO
+        this.cachedHashCode = computeHashCode();
+    }
+
+    private int computeHashCode()
+    {
+        int result = pieceType.hashCode();
+        result = 31 * result + color.hashCode();
+        result = 31 * result * position;
+        result = 31 * result + (isFirstMove ? 1 : 0);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object other)
+    {
+        if (this == other)
+        {
+            return true;
+        }
+        if (!(other instanceof Piece))
+        {
+            return false;
+        }
+
+        final Piece otherPiece = (Piece) other;
+
+        return position == otherPiece.getPiecePosition() && pieceType == otherPiece.getPieceType() && color == otherPiece.getPieceColor() && isFirstMove == otherPiece.isFirstMove();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.cachedHashCode;
     }
 
     public PieceType getPieceType()
@@ -42,6 +76,8 @@ public abstract class Piece
     }
 
     public abstract Collection<Moves> getLegalMoves(final Board board); //All of the possible moves a piece can make
+
+    public abstract Piece movePiece(Moves move);
 
     public enum PieceType
     {
@@ -90,7 +126,7 @@ public abstract class Piece
             @Override
             public boolean isKing()
             {
-                return false;
+                return true;
             }
         };
 

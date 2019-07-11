@@ -65,6 +65,12 @@ public class Queen extends Piece
     }
 
     @Override
+    public Queen movePiece(Moves move) //Returns a new piece at the updated position (after a move)
+    {
+        return new Queen(move.getDestination(), move.getMovedPiece().getPieceColor());
+    }
+
+    @Override
     public String toString()
     {
         return PieceType.QUEEN.toString();
