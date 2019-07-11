@@ -2,7 +2,11 @@ package chess.engine.board;
 
 import chess.engine.Color;
 import chess.engine.pieces.*;
+import chess.engine.player.BlackPlayer;
+import chess.engine.player.Player;
+import chess.engine.player.WhitePlayer;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.util.*;
 
@@ -12,7 +16,12 @@ public class Board
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
 
-    private Board(Builder builder)
+    private final WhitePlayer white;
+    private final BlackPlayer black;
+
+    private final Player current;
+
+    private Board(final Builder builder)
     {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Color.WHITE);
@@ -20,6 +29,10 @@ public class Board
 
         final Collection<Moves> whiteStandardLegalMoves = getLegalMoves(this.whitePieces);
         final Collection<Moves> blackStandardLegalMoves = getLegalMoves(this.blackPieces);
+
+        this.white = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.black = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.current = builder.nextMoveMaker.choosePlayer(this.white, this.black);
     }
 
     @Override
@@ -40,6 +53,16 @@ public class Board
         return builder.toString();
     }
 
+    public Player whitePlayer()
+    {
+        return this.white;
+    }
+
+    public Player blackPlayer()
+    {
+        return this.black;
+    }
+
     private static String prettyPrint(final Tile tile)
     {
         if (tile.isFull())
@@ -50,11 +73,21 @@ public class Board
         return tile.toString();
     }
 
+    public Player currentPlayer()
+    {
+        return this.current;
+    }
+
+    public Iterable<Moves> getAllLegalMoves()
+    {
+        return Iterables.unmodifiableIterable(Iterables.concat(this.white.getLegalMoves(), this.black.getLegalMoves()));
+    }
+
     private Collection<Moves> getLegalMoves(final Collection<Piece> pieces)
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final Piece piece: pieces)
+        for (final Piece piece : pieces)
         {
             legalMoves.addAll(piece.getLegalMoves(this));
         }
@@ -62,11 +95,21 @@ public class Board
         return ImmutableList.copyOf(legalMoves);
     }
 
+    public Collection<Piece> getBlackPieces()
+    {
+        return this.blackPieces;
+    }
+
+    public Collection<Piece> getWhitePieces()
+    {
+        return this.whitePieces;
+    }
+
     private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Color color)
     {
         final List<Piece> activePieces = new ArrayList<>();
 
-        for (final Tile tile: gameBoard)
+        for (final Tile tile : gameBoard)
         {
             if (tile.isFull())
             {
