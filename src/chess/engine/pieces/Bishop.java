@@ -20,7 +20,7 @@ public class Bishop extends Piece
 
     public Bishop(int position, Color color)
     {
-        super(position, color);
+        super(PieceType.BISHOP, position, color);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Bishop extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int currentOffset: BISHOP_MOVES)
+        for (final int currentOffset : BISHOP_MOVES)
         {
             int possibleCoordinate = this.position;
 

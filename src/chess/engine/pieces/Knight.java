@@ -19,14 +19,14 @@ public class Knight extends Piece
     private final static int[] KNIGHT_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17}; //Represents all of the possible moves a knight can make
     public Knight(final int position, final Color color)
     {
-        super(position, color);
+        super(PieceType.KNIGHT, position, color);
     }
 
     @Override
     public Collection<Moves> getLegalMoves(final Board board) //Returns a list of all possible tiles the knight can move to
     {
         final List<Moves> legalMoves = new ArrayList<>();
-        for (final int current: KNIGHT_MOVES)
+        for (final int current : KNIGHT_MOVES)
         {
                 int possibleCoordinate = this.position + current; //Possible position the knight can move to
 

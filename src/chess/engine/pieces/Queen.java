@@ -19,7 +19,7 @@ public class Queen extends Piece
 
     public Queen(int position, Color color)
     {
-        super(position, color);
+        super(PieceType.QUEEN, position, color);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Queen extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int currentOffset: QUEEN_MOVES)
+        for (final int currentOffset : QUEEN_MOVES)
         {
             int possibleCoordinate = this.position;
 

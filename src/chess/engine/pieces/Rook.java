@@ -20,7 +20,7 @@ public class Rook extends Piece
 
     public Rook(int position, Color color)
     {
-        super(position, color);
+        super(PieceType.ROOK, position, color);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Rook extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int currentOffset: ROOK_MOVES)
+        for (final int currentOffset : ROOK_MOVES)
         {
             int possibleCoordinate = this.position;
 

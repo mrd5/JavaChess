@@ -8,15 +8,22 @@ import java.util.Collection;
 
 public abstract class Piece
 {
+    protected final PieceType pieceType;
     protected final int position;
     protected final Color color;
     protected final boolean isFirstMove;
 
-    Piece(final int position, final Color color)
+    Piece(final PieceType pieceType, int position, final Color color)
     {
+        this.pieceType = pieceType;
         this.position = position;
         this.color = color;
         this.isFirstMove = false; //TODO
+    }
+
+    public PieceType getPieceType()
+    {
+        return this.pieceType;
     }
 
     public int getPiecePosition()
@@ -38,12 +45,54 @@ public abstract class Piece
 
     public enum PieceType
     {
-        PAWN("P"),
-        KNIGHT("N"),
-        BISHOP("B"),
-        QUEEN("Q"),
-        ROOK("R"),
-        KING("K");
+        PAWN("P")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+        },
+        KNIGHT("N")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+        },
+        BISHOP("B")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+        },
+        QUEEN("Q")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+       },
+        ROOK("R")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+        },
+        KING("K")
+        {
+            @Override
+            public boolean isKing()
+            {
+                return false;
+            }
+        };
 
 
         private String pieceName;
@@ -58,5 +107,7 @@ public abstract class Piece
         {
             return this.pieceName;
         }
+
+        public abstract boolean isKing();
     }
 }

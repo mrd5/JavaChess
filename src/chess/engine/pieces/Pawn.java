@@ -20,7 +20,7 @@ public class Pawn extends Piece
 
     public Pawn(final int position, final Color color)
     {
-        super(position, color);
+        super(PieceType.PAWN, position, color);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Pawn extends Piece
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
-        for (final int currentOffset: PAWN_MOVES)
+        for (final int currentOffset : PAWN_MOVES)
         {
             int possibleCoordinate = this.position + (this.getPieceColor().getColor() * currentOffset);
 
