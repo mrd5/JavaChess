@@ -12,7 +12,7 @@ public abstract class Piece
     protected final int position;
     protected final Color color;
     protected final boolean isFirstMove;
-    private final int cachedHashCode
+    private final int cachedHashCode;
 
     Piece(final PieceType pieceType, int position, final Color color)
     {
@@ -79,12 +79,20 @@ public abstract class Piece
 
     public abstract Piece movePiece(Moves move);
 
+
+
     public enum PieceType
     {
         PAWN("P")
         {
             @Override
             public boolean isKing()
+            {
+                return false;
+            }
+
+            @Override
+            public boolean isRook()
             {
                 return false;
             }
@@ -96,11 +104,23 @@ public abstract class Piece
             {
                 return false;
             }
+
+            @Override
+            public boolean isRook()
+            {
+                return false;
+            }
         },
         BISHOP("B")
         {
             @Override
             public boolean isKing()
+            {
+                return false;
+            }
+
+            @Override
+            public boolean isRook()
             {
                 return false;
             }
@@ -112,6 +132,12 @@ public abstract class Piece
             {
                 return false;
             }
+
+            @Override
+            public boolean isRook()
+            {
+                return false;
+            }
        },
         ROOK("R")
         {
@@ -120,6 +146,12 @@ public abstract class Piece
             {
                 return false;
             }
+
+            @Override
+            public boolean isRook()
+            {
+                return true;
+            }
         },
         KING("K")
         {
@@ -127,6 +159,12 @@ public abstract class Piece
             public boolean isKing()
             {
                 return true;
+            }
+
+            @Override
+            public boolean isRook()
+            {
+                return false;
             }
         };
 
@@ -145,5 +183,6 @@ public abstract class Piece
         }
 
         public abstract boolean isKing();
+        public abstract boolean isRook();
     }
 }
