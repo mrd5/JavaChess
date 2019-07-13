@@ -41,6 +41,11 @@ public abstract class Tile
 
     public abstract Piece getPiece(); //Returns the piece currently on the tile, if any
 
+    public int getTileCoordinate()
+    {
+        return this.position;
+    }
+
     public static final class Empty extends Tile //Empty tiles (tiles without a piece on them)
     {
         private Empty(int position)
