@@ -1,6 +1,8 @@
 package chess.engine.board;
 
+import chess.engine.pieces.Pawn;
 import chess.engine.pieces.Piece;
+import chess.engine.pieces.Rook;
 
 public abstract class Moves
 {
@@ -17,6 +19,33 @@ public abstract class Moves
         this.destination = destination;
     }
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+
+        result = prime * result + this.destination;
+        result = prime * result + this.movedPiece.hashCode();
+        return result;
+    }
+
+    @Override public boolean equals(final Object other)
+    {
+        if (this == other)
+        {
+            if (!(other instanceof Moves))
+            {
+                return false;
+            }
+
+            final Moves otherMove = (Moves) other;
+            return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
+                   getDestination() == otherMove.getDestination() &&
+                   getMovedPiece() == otherMove.getMovedPiece();
+        }
+    }
+
     public int getCurrentCoordinate()
     {
         return this.movedPiece.getPiecePosition();
@@ -30,6 +59,16 @@ public abstract class Moves
     public Piece getMovedPiece()
     {
         return this.movedPiece;
+    }
+
+    public boolean isCastlingMove()
+    {
+        return false;
+    }
+
+    public Piece getAttackedPiece()
+    {
+        return null;
     }
 
     public Board execute() //Returns a new board updated with the new move
@@ -75,9 +114,45 @@ public abstract class Moves
         }
 
         @Override
+        public int hashCode()
+        {
+            return this.attackedPiece.hashCode() + super.hashCode();
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            if (this == other)
+            {
+                return true;
+            }
+
+            if (!(other instanceof AttackMove))
+            {
+                return false;
+            }
+
+            final AttackMove otherAttackMove = (AttackMove) other;
+
+            return super.equals(otherAttackMove) && getAttackedPiece().equals(otherAttackMove.getAttackedPiece());
+        }
+
+        @Override
         public Board execute()
         {
             return null;
+        }
+
+        @Override
+        public boolean isAttack()
+        {
+
+        }
+
+        @Override
+        public Piece getAttackedPiece()
+        {
+            return this.attackedPiece;
         }
     }
 
@@ -111,29 +186,109 @@ public abstract class Moves
         {
             super(board, movedPiece, destination);
         }
+
+        @Override
+        public Board execute()
+        {
+            final Board.Builder builder = new Board.Builder();
+
+            for (final Piece piece : this.board.currentPlayer().getActivePieces())
+            {
+                if (!this.movedPiece.equals(piece))
+                {
+                    builder.setPiece(piece);
+                }
+            }
+
+            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces())
+            {
+                builder.setPiece(piece);
+            }
+
+            final Pawn movedPawn = (Pawn) this.movedPiece.movePiece(this);
+            builder.setPiece(movedPawn);
+            builder.setEnPassantPawn(movedPawn);
+            builder.setMoveMaker(this.board.currentPlayer().getOpponent().getColor());
+
+            return builder.build();
+        }
     }
 
     abstract static class CastleMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
     {
-        public CastleMove(final Board board, final Piece movedPiece, final int destination)
+        protected final Rook castleRook;
+        protected final int castleRookStart;
+        protected final int castleRookDestination;
+
+        public CastleMove(final Board board, final Piece movedPiece, final int destination, Rook castleRook, int castleRookStart, int castleRookDestination)
         {
             super(board, movedPiece, destination);
+            this.castleRook = castleRook;
+            this.castleRookStart = castleRookStart;
+            this.castleRookDestination = castleRookDestination;
+        }
+
+        public Rook getCastleRook()
+        {
+            return this.castleRook;
+        }
+
+        @Override
+        public boolean isCastlingMove()
+        {
+            return true;
+        }
+
+        @Override
+        public Board execute()
+        {
+            final Board.Builder builder = new Board.Builder();
+            for (final Piece piece : this.board.currentPlayer().getActivePieces())
+            {
+                if (!this.movedPiece.equals(piece) && !this.castleRook.equals(piece))
+                {
+                    builder.setPiece(piece);
+                }
+            }
+
+            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces())
+            {
+                builder.setPiece(piece);
+            }
+
+            builder.setPiece(this.movedPiece.movePiece(this));
+            builder.setPiece(new Rook(this.castleRookDestination, this.castleRook.getPieceColor()));
+            builder.setMoveMaker(this.board.currentPlayer().getOpponent().getColor());
+
+            return builder.build();
         }
     }
 
     public static final class KingSideCastleMove extends CastleMove //A Major move is a move where no opposing piece is claimed by the user
     {
-        public KingSideCastleMove(final Board board, final Piece movedPiece, final int destination)
+        public KingSideCastleMove(final Board board, final Piece movedPiece, final int destination, Rook castleRook, int castleRookStart, int castleRookDestination)
         {
-            super(board, movedPiece, destination);
+            super(board, movedPiece, destination, castleRook, castleRookStart, castleRookDestination);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "0-0";
         }
     }
 
     public static final class QueenSideCastleMove extends CastleMove //A Major move is a move where no opposing piece is claimed by the user
     {
-        public QueenSideCastleMove(final Board board, final Piece movedPiece, final int destination)
+        public QueenSideCastleMove(final Board board, final Piece movedPiece, final int destination, Rook castleRook, int castleRookStart, int castleRookDestination)
         {
-            super(board, movedPiece, destination);
+            super(board, movedPiece, destination, castleRook, castleRookStart, castleRookDestination);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "0-0-0";
         }
     }
 
