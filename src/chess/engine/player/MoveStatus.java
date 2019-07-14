@@ -19,22 +19,22 @@ public enum MoveStatus
         }
     },
     ILLEGAL_MOVE
-            {
-                @Override
-                boolean isDone()
-                {
-                    return false;
-                }
-            },
+    {
+        @Override
+        public boolean isDone()
+        {
+            return false;
+        }
+    },
     LEAVES_PLAYER_IN_CHECK
     {
         @Override
-        boolean isDone()
+        public boolean isDone()
         {
             return false;
         }
     }
     ;
 
-    abstract boolean isDone();
+    public abstract boolean isDone();
 }
