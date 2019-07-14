@@ -34,16 +34,18 @@ public abstract class Moves
     {
         if (this == other)
         {
-            if (!(other instanceof Moves))
-            {
-                return false;
-            }
-
-            final Moves otherMove = (Moves) other;
-            return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
-                   getDestination() == otherMove.getDestination() &&
-                   getMovedPiece() == otherMove.getMovedPiece();
+            return true;
         }
+
+        if (!(other instanceof Moves))
+        {
+            return false;
+        }
+
+        final Moves otherMove = (Moves) other;
+        return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
+                getDestination() == otherMove.getDestination() &&
+                getMovedPiece() == otherMove.getMovedPiece();
     }
 
     public int getCurrentCoordinate()
@@ -141,12 +143,6 @@ public abstract class Moves
         public Board execute()
         {
             return null;
-        }
-
-        @Override
-        public boolean isAttack()
-        {
-
         }
 
         @Override
