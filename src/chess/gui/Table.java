@@ -6,6 +6,7 @@ import chess.engine.board.Moves;
 import chess.engine.board.Tile;
 import chess.engine.pieces.Piece;
 import chess.engine.player.MoveTransition;
+import com.google.common.collect.Lists;
 import com.sun.xml.internal.bind.v2.TODO;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
@@ -26,12 +29,19 @@ import static javax.swing.SwingUtilities.isRightMouseButton;
 public class Table
 {
     private final JFrame gameFrame;
+    private final GameHistory gameHistory;
+    private final TakenPieces takenPieces;
     private final BoardPanel boardPanel;
+    private final MoveLog moveLog;
+
     private Board chessBoard;
 
     private Tile sourceTile;
     private Tile destinationTile;
     private Piece humanMovedPiece;
+    private BoardDirection boardDirection;
+
+    private boolean highlightLegalMoves;
 
     private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(600, 600);
     private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(450, 450);
@@ -52,17 +62,24 @@ public class Table
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.chessBoard = Board.createStandardBoard();
         this.boardPanel = new BoardPanel();
+        this.moveLog = new MoveLog();
+        this.gameHistory = new GameHistory();
+        this.takenPieces = new TakenPieces();
         this.gameFrame.add(this.boardPanel, BorderLayout.CENTER);
+        this.gameFrame.add(this.takenPieces, BorderLayout.WEST);
+        this.gameFrame.add(this.gameHistory, BorderLayout.EAST);
         this.gameFrame.setVisible(true);
+        this.highlightLegalMoves = true;
     }
 
     private JMenuBar createTableMenuBar()
     {
         final JMenuBar tableMenuBar = new JMenuBar();
         tableMenuBar.add(createFileMenu());
-
+        tableMenuBar.add(createPreferencesMenu());
         return tableMenuBar;
     }
+
 
     private JMenu createFileMenu()
     {
@@ -91,6 +108,72 @@ public class Table
         fileMenu.add(exitMenuItem);
 
         return fileMenu;
+    }
+
+    private JMenu createPreferencesMenu()
+    {
+        final JMenu preferencesMenu = new JMenu("Preferences");
+        final JMenuItem flipBoardMenuItem = new JMenuItem("Flip Board");
+        flipBoardMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boardDirection = boardDirection.opposite();
+                boardPanel.drawBoard(chessBoard);
+            }
+        });
+        preferencesMenu.add(flipBoardMenuItem);
+        preferencesMenu.addSeparator();
+
+        final JCheckBoxMenuItem legalMoveHighlighterCheckbox = new JCheckBoxMenuItem("Highlight Legal Moves", false);
+
+        legalMoveHighlighterCheckbox.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                highlightLegalMoves = legalMoveHighlighterCheckbox.isSelected();
+            }
+        });
+        preferencesMenu.add(legalMoveHighlighterCheckbox);
+
+        return preferencesMenu;
+    }
+
+    public enum BoardDirection
+    {
+        NORMAL
+        {
+            @Override
+            java.util.List<TilePanel> traverse(final java.util.List<TilePanel> boardTiles)
+            {
+                return boardTiles;
+            }
+
+            @Override
+            BoardDirection opposite()
+            {
+                return FLIPPED;
+            }
+        },
+        FLIPPED
+        {
+            @Override
+            java.util.List<TilePanel> traverse(final java.util.List<TilePanel> boardTiles)
+            {
+                return Lists.reverse(boardTiles);
+            }
+
+            @Override
+            BoardDirection opposite()
+            {
+                return NORMAL;
+            }
+        };
+
+        abstract java.util.List<TilePanel> traverse(final java.util.List<TilePanel> boardTiles);
+        abstract BoardDirection opposite();
     }
 
     private class BoardPanel extends JPanel
@@ -122,6 +205,46 @@ public class Table
             }
             validate();
             repaint();
+        }
+    }
+
+    public static class MoveLog
+    {
+        private final java.util.List<Moves> moves;
+
+        MoveLog()
+        {
+            this.moves = new ArrayList<>();
+        }
+
+        public java.util.List<Moves> getMoves()
+        {
+            return this.moves;
+        }
+
+        public void addMove(final Moves move)
+        {
+            this.moves.add(move);
+        }
+
+        public int size()
+        {
+            return this.moves.size();
+        }
+
+        public void clear()
+        {
+            this.moves.clear();
+        }
+
+        public Moves removeMove(int index)
+        {
+            return this.moves.remove(index);
+        }
+
+        public boolean removeMove(final Moves move)
+        {
+            return this.moves.remove(move);
         }
     }
 
@@ -171,6 +294,7 @@ public class Table
                             if (transition.getMoveStatus().isDone())
                             {
                                 chessBoard = transition.getTransitionBoard();
+                                moveLog.addMove(move);
                             }
                             sourceTile = null;
                             destinationTile = null;
@@ -181,6 +305,8 @@ public class Table
                             @Override
                             public void run()
                             {
+                                gameHistory.redo(chessBoard, moveLog);
+                                takenPieces.redo(moveLog);
                                 boardPanel.drawBoard(chessBoard);
                             }
                         });
@@ -222,6 +348,37 @@ public class Table
             repaint();
         }
 
+        private void highlightLegals(final Board board)
+        {
+            if (highlightLegalMoves)
+            {
+                for (final Moves move : pieceLegalMoves(board))
+                {
+                    if (move.getDestination() == this.tileId)
+                    {
+                        try
+                        {
+                            add(new JLabel(new ImageIcon(ImageIO.read(new File(defaultPieceImagesPath + "dot.png")))));
+                        } catch(Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private Collection<Moves> pieceLegalMoves(final Board board)
+        {
+            if (humanMovedPiece != null && humanMovedPiece.getPieceColor() == board.currentPlayer().getColor())
+            {
+                return humanMovedPiece.getLegalMoves(board);
+            }
+
+            return Collections.emptyList();
+        }
+
         private void assignTilePieceIcon(final Board board)
         {
             this.removeAll();
@@ -253,6 +410,4 @@ public class Table
             }
         }
     }
-
-
 }
