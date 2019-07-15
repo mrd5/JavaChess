@@ -20,7 +20,12 @@ public class Pawn extends Piece
 
     public Pawn(final int position, final Color color)
     {
-        super(PieceType.PAWN, position, color);
+        super(PieceType.PAWN, position, color, true);
+    }
+
+    public Pawn(final int position, final Color color, boolean isFirstMove)
+    {
+        super(PieceType.PAWN, position, color, isFirstMove);
     }
 
     @Override
@@ -42,14 +47,14 @@ public class Pawn extends Piece
                 legalMoves.add(new MajorMove(board, this, possibleCoordinate));
             }
             else if (currentOffset == 16 && this.isFirstMove() && //Moves two tiles (at first turn)
-                    ((BoardUtils.SECOND_ROW[this.position] && this.getPieceColor().isBlack()) ||
-                      BoardUtils.SEVENTH_ROW[this.position] && this.getPieceColor().isWhite()))
+                    ((BoardUtils.SECOND_ROW[this.position] && this.getPieceColor().isWhite()) ||
+                      BoardUtils.SEVENTH_ROW[this.position] && this.getPieceColor().isBlack()))
             {
                 final int behindPossiblePosition = this.position + (this.getPieceColor().getColor() * 8);
                 if (!board.getTile(behindPossiblePosition).isFull() &&
                     !board.getTile(possibleCoordinate).isFull())
                 {
-                    legalMoves.add(new MajorMove(board, this, possibleCoordinate));
+                    legalMoves.add(new PawnJump(board, this, possibleCoordinate));
                 }
             }
             else if (currentOffset == 7 &&
@@ -61,7 +66,7 @@ public class Pawn extends Piece
                     final Piece targetPiece = board.getTile(possibleCoordinate).getPiece();
                     if (this.getPieceColor() != targetPiece.getPieceColor()) //ATTACKING different color
                     {
-                        legalMoves.add(new MajorMove(board, this, possibleCoordinate));
+                        legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
                     }
                 }
             }
@@ -74,7 +79,7 @@ public class Pawn extends Piece
                     final Piece targetPiece = board.getTile(possibleCoordinate).getPiece();
                     if (this.getPieceColor() != targetPiece.getPieceColor()) //ATTACKING different color
                     {
-                        legalMoves.add(new MajorMove(board, this, possibleCoordinate));
+                        legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
                     }
                 }
             }

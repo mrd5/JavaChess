@@ -20,7 +20,12 @@ public class Rook extends Piece
 
     public Rook(int position, Color color)
     {
-        super(PieceType.ROOK, position, color);
+        super(PieceType.ROOK, position, color, true);
+    }
+
+    public Rook(int position, Color color, boolean isFirstMove)
+    {
+        super(PieceType.ROOK, position, color, isFirstMove);
     }
 
     @Override

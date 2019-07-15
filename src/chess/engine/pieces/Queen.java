@@ -19,7 +19,12 @@ public class Queen extends Piece
 
     public Queen(int position, Color color)
     {
-        super(PieceType.QUEEN, position, color);
+        super(PieceType.QUEEN, position, color, true);
+    }
+
+    public Queen(int position, Color color, boolean isFirstMove)
+    {
+        super(PieceType.QUEEN, position, color, isFirstMove);
     }
 
     @Override

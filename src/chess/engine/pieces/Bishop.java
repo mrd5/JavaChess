@@ -20,8 +20,14 @@ public class Bishop extends Piece
 
     public Bishop(int position, Color color)
     {
-        super(PieceType.BISHOP, position, color);
+        super(PieceType.BISHOP, position, color, true);
     }
+
+    public Bishop(int position, Color color, boolean isFirstMove)
+    {
+        super(PieceType.BISHOP, position, color, isFirstMove);
+    }
+
 
     @Override
     public Collection<Moves> getLegalMoves(final Board board)

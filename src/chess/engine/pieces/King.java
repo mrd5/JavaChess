@@ -20,7 +20,12 @@ public class King extends Piece
 
     public King(final int position, final Color color)
     {
-        super(PieceType.KING, position, color);
+        super(PieceType.KING, position, color, true);
+    }
+
+    public King(final int position, final Color color, boolean isFirstMove)
+    {
+        super(PieceType.KING, position, color, isFirstMove);
     }
 
     @Override

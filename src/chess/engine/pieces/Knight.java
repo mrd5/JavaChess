@@ -19,7 +19,12 @@ public class Knight extends Piece
     private final static int[] KNIGHT_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17}; //Represents all of the possible moves a knight can make
     public Knight(final int position, final Color color)
     {
-        super(PieceType.KNIGHT, position, color);
+        super(PieceType.KNIGHT, position, color, true);
+    }
+
+    public Knight(final int position, final Color color, boolean isFirstMove)
+    {
+        super(PieceType.KNIGHT, position, color, isFirstMove);
     }
 
     @Override
