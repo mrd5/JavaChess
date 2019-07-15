@@ -6,9 +6,10 @@ import chess.engine.pieces.Rook;
 
 public abstract class Moves
 {
-    final Board board;
-    final Piece movedPiece;
-    final int destination;
+    protected final Board board;
+    protected final Piece movedPiece;
+    protected final int destination;
+    protected final boolean isFirstMove;
 
     public static final Moves NULL_MOVE = new NullMove();
 
@@ -17,6 +18,15 @@ public abstract class Moves
         this.board = board;
         this.movedPiece = movedPiece;
         this.destination = destination;
+        this.isFirstMove = movedPiece.isFirstMove();
+    }
+
+    private Moves(final Board board, final int destination)
+    {
+        this.board = board;
+        this.destination = destination;
+        this.movedPiece = null;
+        this.isFirstMove = false;
     }
 
     @Override
@@ -27,6 +37,7 @@ public abstract class Moves
 
         result = prime * result + this.destination;
         result = prime * result + this.movedPiece.hashCode();
+        result = prime * result + this.movedPiece.getPiecePosition();
         return result;
     }
 
@@ -44,8 +55,8 @@ public abstract class Moves
 
         final Moves otherMove = (Moves) other;
         return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
-                getDestination() == otherMove.getDestination() &&
-                getMovedPiece() == otherMove.getMovedPiece();
+               getDestination() == otherMove.getDestination() &&
+               getMovedPiece().equals(otherMove.getMovedPiece());
     }
 
     public int getCurrentCoordinate()
@@ -102,6 +113,18 @@ public abstract class Moves
         public MajorMove(final Board board, final Piece movedPiece, final int destination)
         {
             super(board, movedPiece, destination);
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other | other instanceof MajorMove && super.equals(other);
+        }
+
+        @Override
+        public String toString()
+        {
+            return movedPiece.getPieceType().toString() + BoardUtils.getPositionAtCoordinate(this.destination);
         }
     }
 
@@ -208,6 +231,12 @@ public abstract class Moves
 
             return builder.build();
         }
+
+        @Override
+        public String toString()
+        {
+            return BoardUtils.getPositionAtCoordinate(this.destination);
+        }
     }
 
     abstract static class CastleMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
@@ -292,7 +321,7 @@ public abstract class Moves
     {
         public NullMove()
         {
-            super(null, null, -1);
+            super(null, -1);
         }
 
         @Override
