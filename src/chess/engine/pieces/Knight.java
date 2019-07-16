@@ -58,7 +58,7 @@ public class Knight extends Piece
 
                         if (this.color != pieceColor) //If occupied tile has a piece of the opposite color, knight can move to it and claim the piece on it
                         {
-                            legalMoves.add(new AttackMove(board, this, possibleCoordinate, currentTilePiece));
+                            legalMoves.add(new MajorAttackMove(board, this, possibleCoordinate, currentTilePiece));
                         }
 
                     }

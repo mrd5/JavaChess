@@ -52,7 +52,7 @@ public class Bishop extends Piece
 
                     if (!currentTile.isFull()) //If tile is empty, knight can move to it
                     {
-                        legalMoves.add(new Moves.MajorMove(board, this, possibleCoordinate));
+                        legalMoves.add(new MajorMove(board, this, possibleCoordinate));
                     } else //If tile is already occupied
                     {
                         final Piece currentTilePiece = currentTile.getPiece();
@@ -60,7 +60,7 @@ public class Bishop extends Piece
 
                         if (this.color != pieceColor) //If occupied tile has a piece of the opposite color, knight can move to it and claim the piece on it
                         {
-                            legalMoves.add(new AttackMove(board, this, possibleCoordinate, currentTilePiece));
+                            legalMoves.add(new MajorAttackMove(board, this, possibleCoordinate, currentTilePiece));
                         }
                         break;
                     }

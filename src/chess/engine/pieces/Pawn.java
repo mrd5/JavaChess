@@ -44,7 +44,7 @@ public class Pawn extends Piece
 
             if (currentOffset == 8 && !board.getTile(possibleCoordinate).isFull()) //Single move
             {
-                legalMoves.add(new MajorMove(board, this, possibleCoordinate));
+                legalMoves.add(new PawnMove(board, this, possibleCoordinate));
             }
             else if (currentOffset == 16 && this.isFirstMove() && //Moves two tiles (at first turn)
                     ((BoardUtils.SECOND_ROW[this.position] && this.getPieceColor().isWhite()) ||
@@ -69,6 +69,17 @@ public class Pawn extends Piece
                         legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
                     }
                 }
+                else if (board.getEnPassantPawn() != null)
+                {
+                    if (board.getEnPassantPawn().getPiecePosition() == (this.position + (this.color.getOppositeColor())))
+                    {
+                        final Piece pieceOnCandidate = board.getEnPassantPawn();
+                        if (this.color != pieceOnCandidate.getPieceColor())
+                        {
+                            legalMoves.add(new PawnEnPassantAttackMove(board, this , possibleCoordinate, pieceOnCandidate));
+                        }
+                    }
+                }
             }
             else if (currentOffset == 9 &&
                     !(BoardUtils.FIRST_COLUMN[this.position] && this.getPieceColor().isWhite() ||
@@ -80,6 +91,17 @@ public class Pawn extends Piece
                     if (this.getPieceColor() != targetPiece.getPieceColor()) //ATTACKING different color
                     {
                         legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
+                    }
+                }
+                else if (board.getEnPassantPawn() != null)
+                {
+                    if (board.getEnPassantPawn().getPiecePosition() == (this.position - (this.color.getOppositeColor())))
+                    {
+                        final Piece pieceOnCandidate = board.getEnPassantPawn();
+                        if (this.color != pieceOnCandidate.getPieceColor())
+                        {
+                            legalMoves.add(new PawnEnPassantAttackMove(board, this , possibleCoordinate, pieceOnCandidate));
+                        }
                     }
                 }
             }

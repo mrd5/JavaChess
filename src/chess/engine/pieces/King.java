@@ -51,7 +51,7 @@ public class King extends Piece
                     final Color pieceColor = destinationPiece.getPieceColor();
                     if (this.getPieceColor() != pieceColor)
                     {
-                        legalMoves.add(new AttackMove(board, this,possibleCoordinate, destinationPiece));
+                        legalMoves.add(new MajorAttackMove(board, this,possibleCoordinate, destinationPiece));
                     }
                 }
             }
