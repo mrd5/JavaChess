@@ -15,6 +15,12 @@ public enum Color
         }
 
         @Override
+        public int getOppositeColor()
+        {
+            return 1;
+        }
+
+        @Override
         public boolean isWhite()
         {
             return true;
@@ -42,6 +48,12 @@ public enum Color
         }
 
         @Override
+        public int getOppositeColor()
+        {
+            return -1;
+        }
+
+        @Override
         public boolean isWhite()
         {
             return false;
@@ -61,6 +73,7 @@ public enum Color
     };
 
     public abstract int getColor();
+    public abstract int getOppositeColor();
     public abstract boolean isWhite();
     public abstract boolean isBlack();
 
