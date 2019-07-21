@@ -1,10 +1,12 @@
-package tests.chess.engine.board;
+package tests.chess.engine;
 
 import chess.engine.Color;
 import chess.engine.board.Board;
 import chess.engine.board.BoardUtils;
+import chess.engine.board.Moves;
 import chess.engine.pieces.*;
 import chess.engine.player.MoveTransition;
+import chess.engine.player.ai.StandardBoardEvaluator;
 import com.google.common.collect.Iterables;
 import org.junit.Test;
 
@@ -29,6 +31,16 @@ public class TestBoard
         assertFalse(board.currentPlayer().getOpponent().isCastled());
         assertTrue(board.whitePlayer().toString().equals("White"));
         assertTrue(board.blackPlayer().toString().equals("Black"));
+
+        final Iterable<Piece> allPieces = board.getAllPieces();
+        final Iterable<Moves> allMoves = Iterables.concat(board.whitePlayer().getLegalMoves(), board.blackPlayer().getLegalMoves());
+        for(final Moves move : allMoves) {
+            assertFalse(move.isAttack());
+            assertFalse(move.isCastlingMove());
+        }
+
+        assertEquals(Iterables.size(allMoves), 40);
+        assertEquals(Iterables.size(allPieces), 32);
     }
 
     @Test(expected = RuntimeException.class)
@@ -73,10 +85,18 @@ public class TestBoard
         builder.build();
     }
 
+
     @Test
     public void testAlgebreicNotation()
     {
         assertEquals(BoardUtils.getPositionAtCoordinate(0), "a8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(1), "b8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(2), "c8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(3), "d8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(4), "e8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(5), "f8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(6), "g8");
+        assertEquals(BoardUtils.getPositionAtCoordinate(63), "h1");
     }
 
     @Test
