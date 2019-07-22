@@ -13,6 +13,8 @@ import java.util.Collection;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+//Tests the Piece class
+
 public class TestPiece
 {
     @Test

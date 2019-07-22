@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+//Base player class
+
 public abstract class Player
 {
     protected final Board board;
@@ -23,11 +25,11 @@ public abstract class Player
     {
         this.board = board;
         this.king = establishKing();
-        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, calculateKingCastles(legalMoves, opponentMoves)));
+        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, calculateKingCastles(legalMoves, opponentMoves))); //All of the possible moves the player can make
         this.isInCheck = !Player.calculateAttacksOnTile(this.king.getPiecePosition(), opponentMoves).isEmpty();
     }
 
-    protected static Collection<Moves> calculateAttacksOnTile(int piecePosition, Collection<Moves> moves)
+    protected static Collection<Moves> calculateAttacksOnTile(int piecePosition, Collection<Moves> moves) //Returns all of the attacks that can be made on a specific tile by all pieces
     {
         final List<Moves> attackMoves = new ArrayList<>();
         for (final Moves move : moves)
@@ -41,7 +43,7 @@ public abstract class Player
         return ImmutableList.copyOf(attackMoves);
     }
 
-    private King establishKing()
+    private King establishKing() //Returns the king piece
     {
         for (final Piece piece: getActivePieces())
         {
@@ -51,7 +53,7 @@ public abstract class Player
             }
         }
 
-        throw new RuntimeException("How did you get here!?");
+        throw new RuntimeException("How did you get here!?"); //Both players must initially have a king!
     }
 
     public boolean isMoveLegal(final Moves move)
@@ -79,7 +81,7 @@ public abstract class Player
         return this.isInCheck && !hasEscapeMoves();
     }
 
-    protected boolean hasEscapeMoves()
+    protected boolean hasEscapeMoves() //If a king is able to escape check
     {
         for (final Moves move : this.legalMoves)
         {
@@ -105,21 +107,21 @@ public abstract class Player
 
     public MoveTransition makeMove(final Moves move)
     {
-        if (!isMoveLegal(move))
+        if (!isMoveLegal(move)) //If an illegal move is attempted
         {
-            return new MoveTransition(this.board,  move, MoveStatus.ILLEGAL_MOVE);
+            return new MoveTransition(this.board,  move, MoveStatus.ILLEGAL_MOVE, this.board);
         }
 
         final Board transitionBoard = move.execute();
 
         final Collection<Moves> kingAttacks = Player.calculateAttacksOnTile(transitionBoard.currentPlayer().getOpponent().getPlayerKing().getPiecePosition(), transitionBoard.currentPlayer().getLegalMoves());
 
-        if (!kingAttacks.isEmpty())
+        if (!kingAttacks.isEmpty()) //If a player is put into check
         {
-            return new MoveTransition(this.board, move, MoveStatus.LEAVES_PLAYER_IN_CHECK);
+            return new MoveTransition(this.board, move, MoveStatus.LEAVES_PLAYER_IN_CHECK, this.board);
         }
 
-        return new MoveTransition(transitionBoard, move, MoveStatus.DONE);
+        return new MoveTransition(transitionBoard, move, MoveStatus.DONE, transitionBoard);
 
     }
 

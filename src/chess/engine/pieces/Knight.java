@@ -16,7 +16,7 @@ import static chess.engine.board.Moves.*;
 
 public class Knight extends Piece
 {
-    private final static int[] KNIGHT_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17}; //Represents all of the possible moves a knight can make
+    private final static int[] KNIGHT_MOVES = {-17, -15, -10, -6, 6, 10, 15, 17}; //Represents all of the possible moves a knight can make (L shape)
     public Knight(final int position, final Color color)
     {
         super(PieceType.KNIGHT, position, color, true);
@@ -37,10 +37,10 @@ public class Knight extends Piece
 
                 if (isValidCoordinate(possibleCoordinate)) //Coordinate must not be out of bounds
                 {
-                    if (isFirstColumn(position, possibleCoordinate) ||
-                        isSecondColumn(position, possibleCoordinate) ||
-                        isSeventhColumn(position, possibleCoordinate) ||
-                        isEighthColumn(position, possibleCoordinate))
+                    if (isFirstColumn(position, current) ||
+                        isSecondColumn(position, current) ||
+                        isSeventhColumn(position, current) ||
+                        isEighthColumn(position, current))
                     {
                         continue;
                     }
@@ -80,6 +80,8 @@ public class Knight extends Piece
         return PieceType.KNIGHT.toString();
     }
 
+
+    //Moves the knight can't make in some scenarios
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove) //If a knight is on the first column, there are some exceptions to the moves it can make
     {
         return FIRST_COLUMN[currentPosition] && ((possibleMove == -17) || (possibleMove == -10) || (possibleMove == 6) || (possibleMove == 15));

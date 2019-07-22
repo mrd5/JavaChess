@@ -6,6 +6,8 @@ import chess.engine.board.Moves;
 
 import java.util.Collection;
 
+//Abstract piece class that each type of piece will extend
+
 public abstract class Piece
 {
     protected final PieceType pieceType;
@@ -86,7 +88,7 @@ public abstract class Piece
 
 
 
-    public enum PieceType
+    public enum PieceType //Each type of piece will have a value associated with it, used by the AI when analyzing the moves
     {
         PAWN("P", 100)
         {
@@ -192,7 +194,7 @@ public abstract class Piece
         public int getPieceValue()
         {
             return this.pieceValue;
-        }
+        } //Returns the value of a piece
 
         public abstract boolean isKing();
         public abstract boolean isRook();

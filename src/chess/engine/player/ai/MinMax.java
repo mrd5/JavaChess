@@ -4,6 +4,8 @@ import chess.engine.board.Board;
 import chess.engine.board.Moves;
 import chess.engine.player.MoveTransition;
 
+//This is the MinMax algorithm used by the AI to choose the next move
+
 public class MinMax implements  MoveStrategy
 {
     private final BoardEvaluator boardEvaluator;
@@ -34,20 +36,21 @@ public class MinMax implements  MoveStrategy
 
         int numMoves = board.currentPlayer().getLegalMoves().size();
 
-        for (final Moves move : board.currentPlayer().getLegalMoves())
+        for (final Moves move : board.currentPlayer().getLegalMoves()) //Search through the current player's moves
         {
             final MoveTransition moveTransition = board.currentPlayer().makeMove(move);
 
             if (moveTransition.getMoveStatus().isDone())
             {
-                currentValue = board.currentPlayer().getColor().isWhite() ? min(moveTransition.getTransitionBoard(), depth - 1) : max(moveTransition.getTransitionBoard(), depth - 1);
+                currentValue = board.currentPlayer().getColor().isWhite() ? min(moveTransition.getTransitionBoard(), depth - 1)
+                                                                          : max(moveTransition.getTransitionBoard(), depth - 1);
 
-                if (board.currentPlayer().getColor().isWhite() && currentValue >= highestSeenValue)
+                if (board.currentPlayer().getColor().isWhite() && currentValue >= highestSeenValue) //Found a new highest seen value move
                 {
                     highestSeenValue = currentValue;
                     bestMove = move;
                 }
-                else if (board.currentPlayer().getColor().isBlack() && currentValue <= lowestSeenValue)
+                else if (board.currentPlayer().getColor().isBlack() && currentValue <= lowestSeenValue) //Found a new lowest seen value move
                 {
                     lowestSeenValue = currentValue;
                     bestMove = move;
@@ -60,9 +63,9 @@ public class MinMax implements  MoveStrategy
         return bestMove;
     }
 
-    public int min(final Board board, final int depth)
+    public int min(final Board board, final int depth) //min finds the 'worst' move
     {
-        if (depth == 0 || isEndGameScenario(board))
+        if (depth == 0 || isEndGameScenario(board)) //Done searching
         {
             return this.boardEvaluator.evaluate(board, depth);
         }
@@ -75,7 +78,7 @@ public class MinMax implements  MoveStrategy
 
             if (moveTransition.getMoveStatus().isDone())
             {
-                final int currentValue = max(moveTransition.getTransitionBoard(), depth - 1);
+                final int currentValue = max(moveTransition.getTransitionBoard(), depth - 1); //Call to max
 
                 if (currentValue <= lowestSeenValue)
                 {
@@ -86,9 +89,9 @@ public class MinMax implements  MoveStrategy
         return lowestSeenValue;
     }
 
-    public int max(final Board board, final int depth)
+    public int max(final Board board, final int depth) //max finds the 'best' move
     {
-        if (depth == 0 || isEndGameScenario(board))
+        if (depth == 0 || isEndGameScenario(board)) //Done searching
         {
             return this.boardEvaluator.evaluate(board, depth);
         }
@@ -101,7 +104,7 @@ public class MinMax implements  MoveStrategy
 
             if (moveTransition.getMoveStatus().isDone())
             {
-                final int currentValue = min(moveTransition.getTransitionBoard(), depth - 1);
+                final int currentValue = min(moveTransition.getTransitionBoard(), depth - 1); //Call to min
 
                 if (currentValue >= highestSeenValue)
                 {
@@ -113,7 +116,7 @@ public class MinMax implements  MoveStrategy
         return highestSeenValue;
     }
 
-    private boolean isEndGameScenario(Board board)
+    private boolean isEndGameScenario(Board board) //If game over by stalemate or checkmate
     {
         return board.currentPlayer().isInCheckMate() || board.currentPlayer().isInStalemate();
     }

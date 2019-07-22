@@ -9,6 +9,7 @@ import java.util.Map;
 import static chess.engine.board.BoardUtils.NUM_TILES;
 
 //The tiles make up the entire 8x8 chess board
+
 public abstract class Tile
 {
     protected final int position; //Tile position

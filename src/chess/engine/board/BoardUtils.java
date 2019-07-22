@@ -8,11 +8,13 @@ import java.util.Map;
 
 public class BoardUtils
 {
+    //Board Columns
     public static final boolean[] FIRST_COLUMN = initColumn(0);
     public static final boolean[] SECOND_COLUMN = initColumn(1);
     public static final boolean[] SEVENTH_COLUMN = initColumn(6);
     public static final boolean[] EIGHTH_COLUMN = initColumn(7);
 
+    //Board Rows
     public static final boolean[] EIGHTH_ROW = initRow(0);
     public static final boolean[] SEVENTH_ROW = initRow(8);
     public static final boolean[] SIXTH_ROW = initRow(16);
@@ -36,10 +38,10 @@ public class BoardUtils
 
     public static boolean isValidCoordinate(int position)
     {
-        return (position >= 0 && position < NUM_TILES);
+        return (position >= 0 && position < NUM_TILES); //Valid tiles range from 0 to 63
     }
 
-    private static boolean[] initColumn(int colNum)
+    private static boolean[] initColumn(int colNum) //Initializes the column so that it is an array containing the indices of all of its tiles
     {
         final boolean[] column = new boolean[NUM_TILES];
 
@@ -52,7 +54,7 @@ public class BoardUtils
         return column;
     }
 
-    private static boolean[] initRow(int rowNum)
+    private static boolean[] initRow(int rowNum) //Initializes the row to contain the indices of all of its tiles
     {
         final boolean[] row = new boolean[NUM_TILES];
         do
@@ -63,7 +65,7 @@ public class BoardUtils
         return row;
     }
 
-    private static String[] initializeAlgebreicNotation()
+    private static String[] initializeAlgebreicNotation() //Standard chess board algebraic notation
     {
         return new String[]
         {
@@ -78,8 +80,9 @@ public class BoardUtils
         };
     }
 
-    private static Map<String,Integer> initializePositionToCoordinateMap()
+    private static Map<String,Integer> initializePositionToCoordinateMap() //Associates a tile with its corresponding algebraic notation entry
     {
+        //For example: Tile 0 will become associated with a8
         final Map<String, Integer> positionToCoordinate = new HashMap<>();
 
         for (int i = 0; i < NUM_TILES; i++)

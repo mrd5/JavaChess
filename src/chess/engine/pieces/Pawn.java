@@ -29,7 +29,7 @@ public class Pawn extends Piece
     }
 
     @Override
-    public Collection<Moves> getLegalMoves(final Board board)
+    public Collection<Moves> getLegalMoves(final Board board) //Returns all of the legal moves the pawn can make
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
@@ -44,10 +44,18 @@ public class Pawn extends Piece
 
             if (currentOffset == 8 && !board.getTile(possibleCoordinate).isFull()) //Single move
             {
-                legalMoves.add(new PawnMove(board, this, possibleCoordinate));
+                if (this.color.isPawnPromotionSquare(possibleCoordinate))
+                {
+                    legalMoves.add(new PawnPromotion(new PawnMove(board, this, possibleCoordinate), this));
+                }
+                else
+                {
+                    legalMoves.add(new PawnMove(board, this, possibleCoordinate));
+                }
             }
             else if (currentOffset == 16 && this.isFirstMove() && //Moves two tiles (at first turn)
-                    ((BoardUtils.SECOND_ROW[this.position] && this.getPieceColor().isWhite()) ||
+                    ((BoardUtils.SECOND_ROW[this.position] &&
+                      this.getPieceColor().isWhite()) ||
                       BoardUtils.SEVENTH_ROW[this.position] && this.getPieceColor().isBlack()))
             {
                 final int behindPossiblePosition = this.position + (this.getPieceColor().getColor() * 8);
@@ -57,7 +65,7 @@ public class Pawn extends Piece
                     legalMoves.add(new PawnJump(board, this, possibleCoordinate));
                 }
             }
-            else if (currentOffset == 7 &&
+            else if (currentOffset == 7 && //If attacking (non-en passant)
                     !(BoardUtils.EIGHTH_COLUMN[this.position] && this.getPieceColor().isWhite() ||
                      BoardUtils.FIRST_COLUMN[this.position] && this.getPieceColor().isBlack()))
             {
@@ -66,10 +74,17 @@ public class Pawn extends Piece
                     final Piece targetPiece = board.getTile(possibleCoordinate).getPiece();
                     if (this.getPieceColor() != targetPiece.getPieceColor()) //ATTACKING different color
                     {
-                        legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
+                        if (this.color.isPawnPromotionSquare(possibleCoordinate))
+                        {
+                           legalMoves.add(new PawnPromotion(new PawnAttackMove(board, this, possibleCoordinate, targetPiece), this));
+                        }
+                        else
+                        {
+                            legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
+                        }
                     }
                 }
-                else if (board.getEnPassantPawn() != null)
+                else if (board.getEnPassantPawn() != null) //En passant attack
                 {
                     if (board.getEnPassantPawn().getPiecePosition() == (this.position + (this.color.getOppositeColor())))
                     {
@@ -81,7 +96,7 @@ public class Pawn extends Piece
                     }
                 }
             }
-            else if (currentOffset == 9 &&
+            else if (currentOffset == 9 && //Attacking in other direction
                     !(BoardUtils.FIRST_COLUMN[this.position] && this.getPieceColor().isWhite() ||
                       BoardUtils.EIGHTH_COLUMN[this.position] && this.getPieceColor().isBlack()))
             {
@@ -90,10 +105,17 @@ public class Pawn extends Piece
                     final Piece targetPiece = board.getTile(possibleCoordinate).getPiece();
                     if (this.getPieceColor() != targetPiece.getPieceColor()) //ATTACKING different color
                     {
-                        legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
+                        if (this.color.isPawnPromotionSquare(possibleCoordinate))
+                        {
+                            legalMoves.add(new PawnPromotion(new PawnAttackMove(board, this, possibleCoordinate, targetPiece), this));
+                        }
+                        else
+                        {
+                            legalMoves.add(new PawnAttackMove(board, this, possibleCoordinate, targetPiece));
+                        }
                     }
                 }
-                else if (board.getEnPassantPawn() != null)
+                else if (board.getEnPassantPawn() != null) //En passant attack
                 {
                     if (board.getEnPassantPawn().getPiecePosition() == (this.position - (this.color.getOppositeColor())))
                     {
@@ -120,5 +142,10 @@ public class Pawn extends Piece
     public String toString()
     {
         return PieceType.PAWN.toString();
+    }
+
+    public Piece getPromotionPiece() //Pawns will always be promoted to a queen
+    {
+        return new Queen(this.position, this.color, false);
     }
 }

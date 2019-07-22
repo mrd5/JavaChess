@@ -4,6 +4,7 @@ import chess.engine.pieces.Pawn;
 import chess.engine.pieces.Piece;
 import chess.engine.pieces.Rook;
 
+
 public abstract class Moves
 {
     protected final Board board;
@@ -41,7 +42,8 @@ public abstract class Moves
         return result;
     }
 
-    @Override public boolean equals(final Object other)
+    @Override
+    public boolean equals(final Object other)
     {
         if (this == other)
         {
@@ -74,6 +76,11 @@ public abstract class Moves
         return this.movedPiece;
     }
 
+    public boolean isAttack()
+    {
+        return false;
+    }
+
     public boolean isCastlingMove()
     {
         return false;
@@ -83,6 +90,8 @@ public abstract class Moves
     {
         return null;
     }
+
+    public Board getBoard() { return this.board; }
 
     public Board execute() //Returns a new board updated with the new move
     {
@@ -108,7 +117,27 @@ public abstract class Moves
         return builder.build();
     }
 
-    public static final class MajorMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
+    public static class MajorAttackMove extends AttackMove
+    {
+        public MajorAttackMove(final Board board, final Piece pieceMoved, final int destination, final Piece attackedPiece)
+        {
+            super(board, pieceMoved, destination, attackedPiece);
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof MajorAttackMove && super.equals(other);
+        }
+
+        @Override
+        public String toString()
+        {
+            return movedPiece.getPieceType() + BoardUtils.getPositionAtCoordinate(this.destination);
+        }
+    }
+
+    public static final class MajorMove extends Moves //A Major move is simply a move
     {
         public MajorMove(final Board board, final Piece movedPiece, final int destination)
         {
@@ -163,9 +192,9 @@ public abstract class Moves
         }
 
         @Override
-        public Board execute()
+        public boolean isAttack()
         {
-            return null;
+            return true;
         }
 
         @Override
@@ -175,31 +204,157 @@ public abstract class Moves
         }
     }
 
-    public static final class PawnMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
+    public static class PawnMove extends Moves //When a pawn is moved
     {
         public PawnMove(final Board board, final Piece movedPiece, final int destination)
         {
             super(board, movedPiece, destination);
         }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof PawnMove && super.equals(other);
+        }
+
+        @Override
+        public String toString()
+        {
+            return BoardUtils.getPositionAtCoordinate(this.destination);
+        }
     }
 
-    public static class PawnAttackMove extends AttackMove //A Major move is a move where no opposing piece is claimed by the user
+    public static class PawnAttackMove extends AttackMove //When a pawn makes an attack
     {
         public PawnAttackMove(final Board board, final Piece movedPiece, final int destination, final Piece attackedPiece)
         {
             super(board, movedPiece, destination, attackedPiece);
         }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof PawnAttackMove && super.equals(other);
+        }
+
+        @Override
+        public String toString()
+        {
+            return BoardUtils.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0, 1) + "x" + BoardUtils.getPositionAtCoordinate(this.destination);
+        }
     }
 
-    public static final class PawnEnPassantAttackMove extends PawnAttackMove //A Major move is a move where no opposing piece is claimed by the user
+    public static final class PawnEnPassantAttackMove extends PawnAttackMove //When a pawn makes a special type of attack move, called en passant
     {
         public PawnEnPassantAttackMove(final Board board, final Piece movedPiece, final int destination, final Piece attackedPiece)
         {
             super(board, movedPiece, destination, attackedPiece);
         }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof PawnEnPassantAttackMove && super.equals(other);
+        }
+
+        @Override
+        public Board execute()
+        {
+            final Board.Builder builder = new Board.Builder();
+            for (final Piece piece : this.board.currentPlayer().getActivePieces())
+            {
+                if (!this.movedPiece.equals(piece))
+                {
+                    builder.setPiece(piece);
+                }
+            }
+
+            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces())
+            {
+                if (!piece.equals(this.getAttackedPiece()))
+                {
+                    builder.setPiece(piece);
+                }
+            }
+
+            builder.setPiece(this.movedPiece.movePiece(this));
+            builder.setMoveMaker(this.board.currentPlayer().getOpponent().getColor());
+
+            return builder.build();
+        }
     }
 
-    public static final class PawnJump extends Moves //A Major move is a move where no opposing piece is claimed by the user
+    public static class PawnPromotion extends PawnMove //When a pawn reaches the other end of the board, and is promoted (always to a queen in this program)
+    {
+        final Moves decoratedMove;
+        final Pawn promotedPawn;
+        final Piece promotionPiece;
+
+        public PawnPromotion(final Moves decoratedMove, final Piece promotionPiece)
+        {
+            super(decoratedMove.getBoard(), decoratedMove.getMovedPiece(), decoratedMove.getDestination());
+            this.decoratedMove = decoratedMove;
+            this.promotedPawn = (Pawn) decoratedMove.getMovedPiece();
+            this.promotionPiece = promotionPiece;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return decoratedMove.hashCode() + (31 * promotedPawn.hashCode());
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof PawnPromotion && super.equals(other);
+        }
+
+        @Override
+        public Board execute()
+        {
+            final Board pawnMovedBoard = this.decoratedMove.execute();
+            final Board.Builder builder = new Board.Builder();
+
+            for (final Piece piece : pawnMovedBoard.currentPlayer().getActivePieces())
+            {
+                if (!this.promotedPawn.equals(piece))
+                {
+                    builder.setPiece(piece);
+                }
+            }
+
+            for (final Piece piece : pawnMovedBoard.currentPlayer().getOpponent().getActivePieces())
+            {
+                builder.setPiece(piece);
+            }
+            builder.setPiece(this.promotedPawn.getPromotionPiece().movePiece(this));
+            builder.setPiece(this.promotionPiece.movePiece(this));
+            builder.setMoveMaker(pawnMovedBoard.currentPlayer().getColor());
+
+            return builder.build();
+        }
+
+        @Override
+        public boolean isAttack()
+        {
+            return this.decoratedMove.isAttack();
+        }
+
+        @Override
+        public Piece getAttackedPiece()
+        {
+            return this.decoratedMove.getAttackedPiece();
+        }
+
+        @Override
+        public String toString()
+        {
+            return "";
+        }
+    }
+
+    public static final class PawnJump extends Moves //When a pawn jumps forward twice in its forst move
     {
         public PawnJump(final Board board, final Piece movedPiece, final int destination)
         {
@@ -239,7 +394,7 @@ public abstract class Moves
         }
     }
 
-    abstract static class CastleMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
+    abstract static class CastleMove extends Moves //When a king and rook castle
     {
         protected final Rook castleRook;
         protected final int castleRookStart;
@@ -287,13 +442,47 @@ public abstract class Moves
 
             return builder.build();
         }
+
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + this.castleRook.hashCode();
+            result = prime * result + this.castleRookDestination;
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            if (this == other)
+            {
+                return true;
+            }
+
+            if (!(other instanceof CastleMove))
+            {
+                return false;
+            }
+
+            final CastleMove otherCastleMove = (CastleMove) other;
+
+            return super.equals(otherCastleMove) && this.castleRook.equals(otherCastleMove.getCastleRook());
+        }
     }
 
-    public static final class KingSideCastleMove extends CastleMove //A Major move is a move where no opposing piece is claimed by the user
+    public static final class KingSideCastleMove extends CastleMove //When the rook on the right side of the board castles with the king
     {
         public KingSideCastleMove(final Board board, final Piece movedPiece, final int destination, Rook castleRook, int castleRookStart, int castleRookDestination)
         {
             super(board, movedPiece, destination, castleRook, castleRookStart, castleRookDestination);
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof KingSideCastleMove && super.equals(other);
         }
 
         @Override
@@ -303,11 +492,17 @@ public abstract class Moves
         }
     }
 
-    public static final class QueenSideCastleMove extends CastleMove //A Major move is a move where no opposing piece is claimed by the user
+    public static final class QueenSideCastleMove extends CastleMove //When the rook on the left side of the board castles with the king
     {
         public QueenSideCastleMove(final Board board, final Piece movedPiece, final int destination, Rook castleRook, int castleRookStart, int castleRookDestination)
         {
             super(board, movedPiece, destination, castleRook, castleRookStart, castleRookDestination);
+        }
+
+        @Override
+        public boolean equals(final Object other)
+        {
+            return this == other || other instanceof QueenSideCastleMove && super.equals(other);
         }
 
         @Override
@@ -317,7 +512,7 @@ public abstract class Moves
         }
     }
 
-    public static final class NullMove extends Moves //A Major move is a move where no opposing piece is claimed by the user
+    public static final class NullMove extends Moves //A nothing move
     {
         public NullMove()
         {
@@ -329,9 +524,15 @@ public abstract class Moves
         {
             throw new RuntimeException("How did you do this??");
         }
+
+        @Override
+        public int getCurrentCoordinate()
+        {
+            return -1;
+        }
     }
 
-    public static class MoveFactory
+    public static class MoveFactory //Factory design pattern - Returns a move based on the situation
     {
         private MoveFactory()
         {

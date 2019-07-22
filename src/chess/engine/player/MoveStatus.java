@@ -1,5 +1,7 @@
 package chess.engine.player;
 
+//Type of move
+
 public enum MoveStatus
 {
     DONE
@@ -8,14 +10,6 @@ public enum MoveStatus
         public boolean isDone()
         {
             return true;
-        }
-    },
-    ILLEGAL_LOVE
-    {
-        @Override
-        public boolean isDone()
-        {
-            return false;
         }
     },
     ILLEGAL_MOVE

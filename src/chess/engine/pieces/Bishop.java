@@ -16,7 +16,7 @@ import static chess.engine.board.Moves.*;
 
 public class Bishop extends Piece
 {
-    private final static int[] BISHOP_MOVES = {-9, -7, 7, 9};
+    private final static int[] BISHOP_MOVES = {-9, -7, 7, 9}; //Moves a bishop can make (diagonals)
 
     public Bishop(int position, Color color)
     {

@@ -1,8 +1,11 @@
 package chess.engine;
 
+import chess.engine.board.BoardUtils;
 import chess.engine.player.BlackPlayer;
 import chess.engine.player.Player;
 import chess.engine.player.WhitePlayer;
+
+//Chess pieces will either be BLACK or WHITE
 
 public enum Color
 {
@@ -30,6 +33,12 @@ public enum Color
         public boolean isBlack()
         {
             return false;
+        }
+
+        @Override
+        public boolean isPawnPromotionSquare(int position) //If a white pawn is on the eighth row
+        {
+            return BoardUtils.EIGHTH_ROW[position];
         }
 
         @Override
@@ -66,6 +75,12 @@ public enum Color
         }
 
         @Override
+        public boolean isPawnPromotionSquare(int position) //If a black pawn is on the first row
+        {
+            return BoardUtils.FIRST_ROW[position];
+        }
+
+        @Override
         public Player choosePlayer(final WhitePlayer white, final BlackPlayer black)
         {
             return black;
@@ -76,6 +91,6 @@ public enum Color
     public abstract int getOppositeColor();
     public abstract boolean isWhite();
     public abstract boolean isBlack();
-
+    public abstract boolean isPawnPromotionSquare(int position);
     public abstract Player choosePlayer(WhitePlayer white, BlackPlayer black);
 }

@@ -15,7 +15,7 @@ import static chess.engine.board.Moves.*;
 
 public class Queen extends Piece
 {
-    private final static int[] QUEEN_MOVES = {-9, -8, -7, -1, 1, 7, 8, 9}; //Same as Rook OR Bishop
+    private final static int[] QUEEN_MOVES = {-9, -8, -7, -1, 1, 7, 8, 9}; //Same as Rook + Bishop
 
     public Queen(int position, Color color)
     {
@@ -28,7 +28,7 @@ public class Queen extends Piece
     }
 
     @Override
-    public Collection<Moves> getLegalMoves(final Board board)
+    public Collection<Moves> getLegalMoves(final Board board) //Returns all of the possible moves a queen can make
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
@@ -81,6 +81,8 @@ public class Queen extends Piece
         return PieceType.QUEEN.toString();
     }
 
+
+    //Exceptions, moves the queen can't always make
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove)
     {
         return FIRST_COLUMN[currentPosition] && ((possibleMove == -9) || (possibleMove == -1) || (possibleMove == 7));

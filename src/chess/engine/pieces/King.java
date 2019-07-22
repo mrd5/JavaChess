@@ -16,7 +16,7 @@ import static chess.engine.board.Moves.*;
 
 public class King extends Piece
 {
-    private final static int[] KING_MOVES = {-9, -8, -7, -1, 1, 7, 8, 9};
+    private final static int[] KING_MOVES = {-9, -8, -7, -1, 1, 7, 8, 9}; //Moves a king can make (one tile in each direction)
 
     public King(final int position, final Color color)
     {
@@ -29,7 +29,7 @@ public class King extends Piece
     }
 
     @Override
-    public Collection<Moves> getLegalMoves(final Board board)
+    public Collection<Moves> getLegalMoves(final Board board) //Returns all of the possible moves the king can make
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
@@ -72,6 +72,8 @@ public class King extends Piece
         return PieceType.KING.toString();
     }
 
+
+    //Exceptions: Moves the king can't make
     private static boolean isFirstColumn(final int currentPosition, final int possibleMove) //If a knight is on the first column, there are some exceptions to the moves it can make
     {
         return FIRST_COLUMN[currentPosition] && ((possibleMove == -9) || (possibleMove == -1) || (possibleMove == 7));

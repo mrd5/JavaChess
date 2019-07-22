@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+//Tests the Board class
+
 public class TestBoard
 {
     @Test

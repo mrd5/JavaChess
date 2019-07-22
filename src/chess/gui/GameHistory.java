@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
+//Game history panel on the right side of the ui, which displays the moves made by both players
+
 public class GameHistory extends JPanel
 {
     private final DataModel model;
@@ -28,7 +30,7 @@ public class GameHistory extends JPanel
         this.setVisible(true);
     }
 
-    void redo(final Board board, final Table.MoveLog moveHistory)
+    void redo(final Board board, final Table.MoveLog moveHistory) //Redo a move, not yet fully implemented
     {
         int currentRow = 0;
         this.model.clear();
@@ -67,11 +69,11 @@ public class GameHistory extends JPanel
 
     private String calculateCheckAndCheckMateHash(Board board)
     {
-        if (board.currentPlayer().isInCheckMate())
+        if (board.currentPlayer().isInCheckMate()) //Displays a # when the current player is in checkmate
         {
             return "#";
         }
-        else if (board.currentPlayer().isInCheck())
+        else if (board.currentPlayer().isInCheck()) // + is displayed for the user when in check and not checkmate
         {
             return "+";
         }
@@ -79,6 +81,7 @@ public class GameHistory extends JPanel
     }
 
     private static class DataModel extends DefaultTableModel
+        //Used to store and set the data into the game history panel
     {
         private final java.util.List<GameHistory.Row> values;
         private static final String[] NAMES = {"White", "Black"};
@@ -88,14 +91,14 @@ public class GameHistory extends JPanel
             this.values = new ArrayList<>();
         }
 
-        public void clear()
+        public void clear() //Reset the columns
         {
             this.values.clear();
             setRowCount(0);
         }
 
         @Override
-        public int getRowCount()
+        public int getRowCount() //Returns the size of the row of data
         {
             if (this.values == null)
             {
@@ -106,13 +109,13 @@ public class GameHistory extends JPanel
         }
 
         @Override
-        public int getColumnCount()
+        public int getColumnCount() //Returns 2
         {
             return NAMES.length;
         }
 
         @Override
-        public Object getValueAt(final int row, final int column)
+        public Object getValueAt(final int row, final int column) //Returns the value at a specific entry in the table
         {
             final GameHistory.Row currentRow = this.values.get(row);
             if (column == 0)
@@ -127,7 +130,7 @@ public class GameHistory extends JPanel
         }
 
         @Override
-        public void setValueAt(final Object aValue, final int row, final int column)
+        public void setValueAt(final Object aValue, final int row, final int column) //Sets a value at a specific entry in the table
         {
             final GameHistory.Row currentRow;
             if (this.values.size() <= row)

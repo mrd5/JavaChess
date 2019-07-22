@@ -38,6 +38,12 @@ public class BlackPlayer extends Player
     }
 
     @Override
+    public String toString()
+    {
+        return "Black";
+    }
+
+    @Override
     protected Collection<Moves> calculateKingCastles(Collection<Moves> currentsMoves, Collection<Moves> opponentsMoves)
     {
         final List<Moves> kingCastles = new ArrayList<>();
@@ -51,8 +57,8 @@ public class BlackPlayer extends Player
                 if (rookTile.isFull() && rookTile.getPiece().isFirstMove())
                 {
                     if (Player.calculateAttacksOnTile(5, opponentsMoves).isEmpty() &&
-                            Player.calculateAttacksOnTile(6, opponentsMoves).isEmpty() &&
-                            rookTile.getPiece().getPieceType().isRook())
+                        Player.calculateAttacksOnTile(6, opponentsMoves).isEmpty() &&
+                        rookTile.getPiece().getPieceType().isRook()) //If no tiles between the king and rook can be attacked (on the king side)
                     {
                         kingCastles.add(new Moves.KingSideCastleMove(this.board, this.king, 6, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 5));
                     }
@@ -63,7 +69,11 @@ public class BlackPlayer extends Player
             {
                 final Tile rookTile = this.board.getTile(0);
 
-                if (rookTile.isFull() && rookTile.getPiece().isFirstMove() && Player.calculateAttacksOnTile(2, opponentsMoves).isEmpty() && Player.calculateAttacksOnTile(3, opponentsMoves).isEmpty() && rookTile.getPiece().getPieceType().isRook())
+                if (rookTile.isFull() &&
+                    rookTile.getPiece().isFirstMove() &&
+                    Player.calculateAttacksOnTile(2, opponentsMoves).isEmpty() &&
+                    Player.calculateAttacksOnTile(3, opponentsMoves).isEmpty() &&
+                    rookTile.getPiece().getPieceType().isRook()) //If no tiles between the king and rook can be attacked (on the queen side)
                 {
                     kingCastles.add(new Moves.QueenSideCastleMove(this.board, this.king, 2, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 3));
                 }

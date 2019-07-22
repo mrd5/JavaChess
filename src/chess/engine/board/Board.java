@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Board
 {
@@ -20,6 +22,8 @@ public class Board
     private final BlackPlayer black;
 
     private final Player current;
+
+    private final Pawn enPassantPawn;
 
     private Board(final Builder builder)
     {
@@ -33,11 +37,21 @@ public class Board
         this.white = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.black = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.current = builder.nextMoveMaker.choosePlayer(this.white, this.black);
+        this.enPassantPawn = builder.enPassantPawn;
     }
 
     @Override
     public String toString()
     {
+        //Used for early testing, displays the board in the format below
+        //  r  n  b  q  k  b  n  r
+        //  p  p  p  p  p  p  p  p
+        //  -  -  -  -  -  -  -  -
+        //  -  -  -  -  -  -  -  -
+        //  -  -  -  -  -  -  -  -
+        //  -  -  -  -  -  -  -  -
+        //  P  P  P  P  P  P  P  P
+        //  R  N  B  Q  K  B  N  R
         final StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < BoardUtils.NUM_TILES; i++)
@@ -63,27 +77,17 @@ public class Board
         return this.black;
     }
 
-    private static String prettyPrint(final Tile tile)
-    {
-        if (tile.isFull())
-        {
-            return tile.toString();
-        }
-
-        return tile.toString();
-    }
-
     public Player currentPlayer()
     {
         return this.current;
     }
 
-    public Iterable<Moves> getAllLegalMoves()
+    public Iterable<Moves> getAllLegalMoves() //Gets all of the legal moves for all pieces
     {
         return Iterables.unmodifiableIterable(Iterables.concat(this.white.getLegalMoves(), this.black.getLegalMoves()));
     }
 
-    private Collection<Moves> getLegalMoves(final Collection<Piece> pieces)
+    private Collection<Moves> getLegalMoves(final Collection<Piece> pieces) //Gets the legal moves for some set of pieces
     {
         final List<Moves> legalMoves = new ArrayList<>();
 
@@ -105,7 +109,12 @@ public class Board
         return this.whitePieces;
     }
 
-    private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Color color)
+    public Collection<Piece> getAllPieces()
+    {
+        return Stream.concat(this.whitePieces.stream(), this.blackPieces.stream()).collect(Collectors.toList());
+    }
+
+    private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Color color) //Returns which pieces are currently on the board
     {
         final List<Piece> activePieces = new ArrayList<>();
 
@@ -129,7 +138,7 @@ public class Board
         return gameBoard.get(position);
     }
 
-    private static List<Tile> createGameBoard(final Builder builder)
+    private static List<Tile> createGameBoard(final Builder builder) //Creates the initial game board with 64 tiles
     {
         final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];
 
@@ -141,10 +150,11 @@ public class Board
         return ImmutableList.copyOf(tiles);
     }
 
-    public static Board createStandardBoard()
+    public static Board createStandardBoard() //Builds the board by placing the pieces into their initial positions
     {
         final Builder builder = new Builder();
 
+        //BLACK SIDE
         builder.setPiece(new Rook(0, Color.BLACK));
         builder.setPiece(new Knight(1, Color.BLACK));
         builder.setPiece(new Bishop(2, Color.BLACK));
@@ -162,6 +172,7 @@ public class Board
         builder.setPiece(new Pawn(14, Color.BLACK));
         builder.setPiece(new Pawn(15, Color.BLACK));
 
+        //WHITE SIDE
         builder.setPiece(new Pawn(48, Color.WHITE));
         builder.setPiece(new Pawn(49, Color.WHITE));
         builder.setPiece(new Pawn(50, Color.WHITE));
@@ -179,9 +190,15 @@ public class Board
         builder.setPiece(new Knight(62, Color.WHITE));
         builder.setPiece(new Rook(63, Color.WHITE));
 
+        //Set white to move first
         builder.setMoveMaker(Color.WHITE);
 
         return builder.build();
+    }
+
+    public Pawn getEnPassantPawn()
+    {
+        return this.enPassantPawn;
     }
 
     public static class Builder
@@ -195,14 +212,14 @@ public class Board
             this.boardConfig = new HashMap<>();
         }
 
-        public Builder setPiece(final Piece piece)
+        public Builder setPiece(final Piece piece) //Places a piece on a tile
         {
             this.boardConfig.put(piece.getPiecePosition(), piece);
 
             return this;
         }
 
-        public Builder setMoveMaker(final Color nextMoveMaker)
+        public Builder setMoveMaker(final Color nextMoveMaker) //Sets which color player moves next
         {
             this.nextMoveMaker = nextMoveMaker;
 

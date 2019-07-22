@@ -16,7 +16,7 @@ import static chess.engine.board.Moves.*;
 
 public class Rook extends Piece
 {
-    private final static int[] ROOK_MOVES = {-8, -1, 1, 8};
+    private final static int[] ROOK_MOVES = {-8, -1, 1, 8}; //Vertical and horizontal moves
 
     public Rook(int position, Color color)
     {
